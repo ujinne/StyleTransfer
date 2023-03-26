@@ -51,9 +51,10 @@ def main():
         for line in fin.readlines():
             src_seq.append(line.strip())
 
+    os.makedirs('./data/outputs/', exist_ok=True)
     start = time.time()
-    # with open('./data/outputs/{}_{}_{}.{}.txt'.format(
-    with open('./outputs/{}_{}_{}.{}.txt'.format(
+    with open('./data/outputs/{}_{}_{}.{}.txt'.format(
+    # with open('./outputs/{}_{}_{}.{}.txt'.format(
             opt.model, opt.dataset, opt.order, opt.style), 'w') as fout:
         for idx, line in enumerate(src_seq):
             if idx % 100 == 0:

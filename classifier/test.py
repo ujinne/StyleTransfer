@@ -49,13 +49,13 @@ def main():
 
     test_src, test_tgt = [], []
     # with open('./outputs/bart_{}.1.txt'.format(opt.dataset),'r') as f:
-    with open('./outputs/bart_{}_0.0.1.txt'.format(opt.dataset),'r') as f:
+    with open(f'./data/outputs/bart_{opt.dataset}_{opt.order}.1.txt','r') as f:
         for line in f.readlines():
             test_src.append(tokenizer.encode(line.strip())[:opt.max_len])
             print(f'test_src: {line}')
 
     # with open('./outputs/bart_{}.0.txt'.format(opt.dataset),'r') as f:
-    with open('./outputs/bart_{}_0.0.0.txt'.format(opt.dataset),'r') as f:
+    with open(f'./data/outputs/bart_{opt.dataset}_{opt.order}.0.txt','r') as f:
        for line in f.readlines():
            test_tgt.append(tokenizer.encode(line.strip())[:opt.max_len])
            print(f'test_tgt: {line}')
