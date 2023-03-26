@@ -10,8 +10,8 @@ from nltk.translate.bleu_score import SmoothingFunction
 from utils.dataset import collate_fn
 # from transformers.modeling_bart import  make_padding_mask
 
-# device = 'cuda' if cuda.is_available() else 'cpu'
-device = 'cpu'
+device = 'cuda' if cuda.is_available() else 'cpu'
+# device = 'cuda'
 
 def make_padding_mask(input_ids, padding_idx=1):
     """True for pad tokens"""
@@ -57,11 +57,13 @@ def cal_bl_reward(inp, tgt):
 
 def cal_sc_loss(out, idx, cls, tokenizer, style):
     '''Caculate the loss of SC-based reward'''
+    # print(f'device:{device}')
     out = F.softmax(out, dim=-1)
     sample_probs, sample_idx = sample_3d(out)
 
     tgt = []
-    for i, s in zip(idx.cpu(), sample_idx):
+    for i, s in zip(idx, sample_idx):
+        s = s.cpu()
         e = torch.arange(len(s))[s.eq(tokenizer.eos_token_id)]
         e = e[0] if 0<len(e) and 4<e[0]<i else i-1
         tgt.append(s[:e].cpu().tolist())
@@ -85,7 +87,10 @@ def cal_bl_loss(out, tgt, idx, tokenizer):
     greedy_probs, greedy_idx = torch.max(out, dim=-1)
 
     tgt_sam, tgt_gre, tgt_ref = [], [], []
-    for i, s, g, t in zip(idx.cpu(), sample_idx, greedy_idx, tgt):
+    for i, s, g, t in zip(idx, sample_idx, greedy_idx, tgt):
+        s = s.cpu()
+        g = g.cpu()
+        t = t.cpu()
         s_e = torch.arange(len(s))[s.eq(tokenizer.eos_token_id)]
         s_e = s_e[0] if 0<len(s_e) and 0<s_e[0]<i else i-1 # tgt 인덱스 개수랑 맞춰주는 듯
         g_e = torch.arange(len(g))[g.eq(tokenizer.eos_token_id)]
@@ -142,6 +147,7 @@ def evaluate(model, valid_loader, loss_fn,
 
             tgt = []
             for i in idxs:
+                i = i.cpu()
                 e = torch.arange(len(i))[i.eq(tokenizer.eos_token_id)]
                 e = e[0] if 0<len(e) and e[0]<30 else 30
                 tgt.append(i[:e].cpu().tolist())
